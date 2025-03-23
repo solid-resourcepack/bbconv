@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 )
 
@@ -14,6 +13,6 @@ var generateModelsCommand = &cobra.Command{
 	Short: "Generate Minecraft Java ResourcePack definitions by a bbmodel",
 	Run: func(cmd *cobra.Command, args []string) {
 		InitBBCtx(cmd)
-		fmt.Println(GetBBCtx(cmd))
+		InitBaseCtx(cmd)
 	},
 }

@@ -10,8 +10,6 @@ type Animation struct {
 	Selected       bool                `json:"selected"`
 	AnimTimeUpdate string              `json:"anim_time_update"`
 	BlendWeight    string              `json:"blend_weight"`
-	StartDelay     string              `json:"start_delay"`
-	LoopDelay      string              `json:"loop_delay"`
 	Animators      map[string]Animator `json:"animators"`
 }
 

@@ -15,7 +15,7 @@ func InitBBCtx(cmd *cobra.Command) {
 }
 
 func GetBBCtx(cmd *cobra.Command) *bbformat.Model {
-	if cmd.Context() == nil && cmd.Context().Value("bb-data") == nil {
+	if cmd.Context() == nil || cmd.Context().Value("bb-data") == nil {
 		return nil
 	}
 	return cmd.Context().Value("bb-data").(*bbformat.Model)

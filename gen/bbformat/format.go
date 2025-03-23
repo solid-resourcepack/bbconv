@@ -7,7 +7,7 @@ type Model struct {
 	Resolution      Resolution  `json:"resolution"`
 	Elements        []Element   `json:"elements"`
 	Animations      []Animation `json:"animations"`
-	Outliner        []Outliner  `json:"outliner"`
+	Outliner        []Bone      `json:"outliner"`
 	Textures        []Texture   `json:"textures"`
 }
 
