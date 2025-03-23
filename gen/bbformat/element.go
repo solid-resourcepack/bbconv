@@ -28,7 +28,7 @@ type Faces struct {
 }
 
 type UV struct {
-	Uv       []int   `json:"uv"`
-	Rotation float32 `json:"rotation,omitempty"`
-	Texture  int     `json:"texture,omitempty"`
+	Uv       []float32 `json:"uv"`
+	Rotation float32   `json:"rotation,omitempty"`
+	Texture  int       `json:"texture,omitempty"`
 }
