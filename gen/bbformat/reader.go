@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func ReadBBModel(file string) *Model {
+func ReadModel(file string) *Model {
 	contents, readErr := os.ReadFile(file)
 	if readErr != nil {
 		fmt.Printf("Could not access file %s:\n", file)

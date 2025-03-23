@@ -10,7 +10,7 @@ func InitBBCtx(cmd *cobra.Command) {
 	if cmd.Context() != nil && cmd.Context().Value("bb-data") != nil {
 		return
 	}
-	ctx := context.WithValue(context.Background(), "bb-data", bbformat.ReadBBModel(BBFile))
+	ctx := context.WithValue(context.Background(), "bb-data", bbformat.ReadModel(BBFile))
 	cmd.SetContext(ctx)
 }
 
