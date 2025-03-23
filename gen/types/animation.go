@@ -22,16 +22,10 @@ type Animator struct {
 }
 
 type Keyframe struct {
-	Channel       string      `json:"channel"`
-	DataPoints    []DataPoint `json:"data_points"`
-	UUID          string      `json:"uuid"`
-	Time          float32     `json:"time"`
-	Color         int         `json:"color"`
-	Interpolation string      `json:"interpolation"`
-}
-
-type DataPoint struct {
-	X string `json:"x"`
-	Y string `json:"y"`
-	Z string `json:"z"`
+	Channel       string           `json:"channel"`
+	DataPoints    []map[string]any `json:"data_points"`
+	UUID          string           `json:"uuid"`
+	Time          float32          `json:"time"`
+	Color         int              `json:"color"`
+	Interpolation string           `json:"interpolation"`
 }
