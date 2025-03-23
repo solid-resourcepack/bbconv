@@ -1,4 +1,4 @@
-package types
+package bbformat
 
 type Animation struct {
 	UUID           string              `json:"uuid"`

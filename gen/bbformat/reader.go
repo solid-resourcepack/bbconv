@@ -1,19 +1,18 @@
-package reader
+package bbformat
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/solid-resourcepack/bbconv/types"
 	"os"
 )
 
-func ReadBBModel(file string) *types.BlockBenchModel {
+func ReadBBModel(file string) *Model {
 	contents, readErr := os.ReadFile(file)
 	if readErr != nil {
 		fmt.Printf("Could not access file %s:\n", file)
 		panic(readErr)
 	}
-	var result = &types.BlockBenchModel{}
+	var result = &Model{}
 	parseErr := json.Unmarshal(contents, result)
 
 	if parseErr != nil {

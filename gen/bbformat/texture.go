@@ -1,4 +1,4 @@
-package types
+package bbformat
 
 type Texture struct {
 	Path             string `json:"path"`

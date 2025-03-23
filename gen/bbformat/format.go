@@ -1,6 +1,6 @@
-package types
+package bbformat
 
-type BlockBenchModel struct {
+type Model struct {
 	Meta            Meta        `json:"meta"`
 	Name            string      `json:"name"`
 	ModelIdentifier string      `json:"model_identifier"`
