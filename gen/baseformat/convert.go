@@ -16,7 +16,7 @@ func BBToBase(bbModel *bbformat.Model) *Model {
 		log.Fatal(err)
 		return nil
 	}
-	animations, err := ConvertAnimations(bbModel.Animations)
+	animations, err := ConvertAnimations(bones, bbModel.Animations)
 	if err != nil {
 		log.Fatal(err)
 		return nil

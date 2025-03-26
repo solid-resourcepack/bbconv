@@ -20,10 +20,18 @@ type Animator struct {
 }
 
 type Keyframe struct {
-	Channel       string           `json:"channel"`
+	Channel       KeyframeType     `json:"channel"`
 	DataPoints    []map[string]any `json:"data_points"`
 	UUID          string           `json:"uuid"`
 	Time          float32          `json:"time"`
 	Color         int              `json:"color"`
 	Interpolation string           `json:"interpolation"`
 }
+
+type KeyframeType string
+
+var (
+	KeyFrameTypeRotation KeyframeType = "rotation"
+	KeyFrameTypePosition KeyframeType = "position"
+	KeyFrameTypeScale    KeyframeType = "scale"
+)
