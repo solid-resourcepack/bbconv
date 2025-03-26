@@ -23,8 +23,9 @@ func ConvertElement(parent bbformat.Bone, element bbformat.Element) Element {
 	vecs = pivotAll(pivot, vecs)
 	vecs = originAll(vecs)
 	return Element{
-		From: vecs[0],
-		To:   vecs[1],
+		Faces: element.Faces,
+		From:  vecs[0],
+		To:    vecs[1],
 	}
 }
 
