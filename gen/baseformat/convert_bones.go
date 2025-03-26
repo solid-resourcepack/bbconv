@@ -2,49 +2,41 @@ package baseformat
 
 import (
 	"errors"
-	"fmt"
 	"github.com/solid-resourcepack/bbconv/bbformat"
 	"log"
 )
 
-func SingularBoneTree(bone *bbformat.Bone, elements []bbformat.Element) (*Bone, error) {
+func SingularBoneTree(bone *bbformat.Bone, elements []bbformat.Element, baseId string) (*Bone, error) {
 	parentBone := &Bone{
 		Id:       bone.Name,
-		Origin:   toVec(bone.Origin),
+		Key:      baseId + ConvertToKey(bone.Name),
+		Origin:   *toVec(bone.Origin),
 		UUID:     bone.UUID,
+		Visible:  bone.Visibility,
 		Children: []Bone{},
 	}
 
 	for _, child := range bone.Children {
-		switch child := child.(type) {
-		case string:
-			if err := appendElement(child, parentBone, bone, elements); err != nil {
+		if (child.Ref != nil) == (child.Bone != nil) {
+			return nil, errors.New("child is both ref and bone or nothing of both")
+		}
+		if child.Ref != nil {
+			if err := appendElement(*child.Ref, parentBone, bone, elements); err != nil {
 				return nil, err
 			}
-		case *bbformat.Bone:
-			if err := appendPartTree(parentBone, child, elements); err != nil {
+		}
+		if child.Bone != nil {
+			if err := appendPartTree(parentBone, child.Bone, elements, baseId); err != nil {
 				return nil, err
 			}
-		// TODO: do we really need this?
-		case map[string]interface{}:
-			parsed, err := bbformat.MapToBone(child)
-			if err != nil {
-				return nil, err
-			}
-			if err := appendPartTree(parentBone, parsed, elements); err != nil {
-				return nil, err
-			}
-		default:
-			fmt.Printf("Not expected Type: %T\n", child)
-			return nil, errors.New("child is not a Bone or string reference")
 		}
 	}
 	ResizeVisuals(parentBone)
 	return parentBone, nil
 }
 
-func appendPartTree(parentBone *Bone, bone *bbformat.Bone, elements []bbformat.Element) error {
-	subTree, err := SingularBoneTree(bone, elements)
+func appendPartTree(parentBone *Bone, bone *bbformat.Bone, elements []bbformat.Element, baseId string) error {
+	subTree, err := SingularBoneTree(bone, elements, baseId)
 	if err != nil {
 		return err
 	}
@@ -52,13 +44,16 @@ func appendPartTree(parentBone *Bone, bone *bbformat.Bone, elements []bbformat.E
 	return nil
 }
 
-func ConvertBones(outliners []bbformat.Bone, elements []bbformat.Element) ([]Bone, error) {
+func ConvertBones(outliners []bbformat.Bone, elements []bbformat.Element, baseId string) ([]Bone, error) {
 	if len(outliners) < 1 {
 		return nil, errors.New("not at least one outliner provided")
 	}
 	result := make([]Bone, 0, len(outliners))
 	for _, bone := range outliners {
-		tree, err := SingularBoneTree(&bone, elements)
+		if !bone.Visibility {
+			continue
+		}
+		tree, err := SingularBoneTree(&bone, elements, baseId)
 		if err != nil {
 			log.Fatal(err)
 			return nil, err
@@ -78,6 +73,9 @@ func findElement(elementId string, elements []bbformat.Element) (*bbformat.Eleme
 }
 
 func appendElement(id string, parentBone *Bone, bbParentBone *bbformat.Bone, elements []bbformat.Element) error {
+	if !parentBone.Visible {
+		return nil
+	}
 	element, ok := findElement(id, elements)
 	if !ok {
 		return errors.New("child element not found")

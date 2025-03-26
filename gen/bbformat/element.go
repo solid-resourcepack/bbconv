@@ -13,6 +13,7 @@ type Element struct {
 	Autouv              int       `json:"autouv"`
 	Color               int       `json:"color"`
 	Origin              []float32 `json:"origin"`
+	Rotation            []float32 `json:"rotation"`
 	Faces               Faces     `json:"faces"`
 	Type                string    `json:"type"`
 	UUID                string    `json:"uuid"`

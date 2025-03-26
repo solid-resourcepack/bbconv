@@ -18,14 +18,15 @@ var pointBounds = util.Rectangle3D{
 func ConvertElement(parent bbformat.Bone, element bbformat.Element) Element {
 	pivot := toVec(parent.Origin)
 	vecs := make([]vec3.T, 2)
-	vecs[0] = toVec(element.From)
-	vecs[1] = toVec(element.To)
-	vecs = pivotAll(pivot, vecs)
+	vecs[0] = *toVec(element.From)
+	vecs[1] = *toVec(element.To)
+	vecs = pivotAll(*pivot, vecs)
 	vecs = originAll(vecs)
 	return Element{
-		Faces: element.Faces,
-		From:  vecs[0],
-		To:    vecs[1],
+		Faces:    element.Faces,
+		Rotation: toVec(element.Rotation),
+		From:     vecs[0],
+		To:       vecs[1],
 	}
 }
 
@@ -90,8 +91,11 @@ func scalePoint(point, center *vec3.T, scaleFactor float64) vec3.T {
 	return vec3.Add(center, result)
 }
 
-func toVec(points []float32) vec3.T {
-	return vec3.T{
+func toVec(points []float32) *vec3.T {
+	if len(points) != 3 {
+		return nil
+	}
+	return &vec3.T{
 		float64(points[0]),
 		float64(points[1]),
 		float64(points[2]),

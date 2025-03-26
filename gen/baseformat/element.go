@@ -6,7 +6,8 @@ import (
 )
 
 type Element struct {
-	From  vec3.T
-	To    vec3.T
-	Faces bbformat.Faces
+	From     vec3.T
+	To       vec3.T
+	Faces    bbformat.Faces
+	Rotation *vec3.T
 }

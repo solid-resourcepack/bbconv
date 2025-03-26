@@ -11,6 +11,7 @@ type Bone struct {
 	Children []Bone    `json:"children,omitempty"`
 	Visuals  []Element `json:"-"`
 	Origin   vec3.T    `json:"origin"`
+	Visible  bool      `json:"visible"`
 	Scale    float64   `json:"scale"`
 }
 

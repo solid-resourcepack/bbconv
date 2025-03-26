@@ -15,7 +15,7 @@ func InitBaseCtx(cmd *cobra.Command) {
 		return
 	}
 	bbModel := cmd.Context().Value("bb-data").(*bbformat.Model)
-	baseModel := baseformat.BBToBase(bbModel)
+	baseModel := baseformat.BBToBase(bbModel, Namespace)
 	ctx := context.WithValue(cmd.Context(), "base-data", baseModel)
 	cmd.SetContext(ctx)
 }
