@@ -8,6 +8,6 @@ import (
 type Element struct {
 	From     vec3.T
 	To       vec3.T
-	Faces    bbformat.Faces
+	Faces    map[bbformat.Facing]bbformat.Face
 	Rotation *vec3.T
 }

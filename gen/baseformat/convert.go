@@ -8,6 +8,11 @@ import (
 )
 
 func BBToBase(bbModel *bbformat.Model, namespace string) *Model {
+	name, err := ConvertName(bbModel)
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
 	baseId, err := convertBaseId(bbModel, namespace)
 	if err != nil {
 		log.Fatal(err)
@@ -29,7 +34,7 @@ func BBToBase(bbModel *bbformat.Model, namespace string) *Model {
 		return nil
 	}
 	return &Model{
-		bbModel.Name,
+		*name,
 		bones,
 		animations,
 		textures,
@@ -37,6 +42,15 @@ func BBToBase(bbModel *bbformat.Model, namespace string) *Model {
 }
 
 func convertBaseId(bbModel *bbformat.Model, namespace string) (*string, error) {
+	name, err := ConvertName(bbModel)
+	if err != nil {
+		return nil, err
+	}
+	result := namespace + ":item/" + *name + "_"
+	return &result, nil
+}
+
+func ConvertName(bbModel *bbformat.Model) (*string, error) {
 	key := ConvertToKey(bbModel.ModelIdentifier)
 	if len(key) == 0 {
 		key = ConvertToKey(bbModel.Name)
@@ -44,8 +58,7 @@ func convertBaseId(bbModel *bbformat.Model, namespace string) (*string, error) {
 	if len(key) == 0 {
 		return nil, errors.New("no model name provided")
 	}
-	result := namespace + ":item/" + key + "_"
-	return &result, nil
+	return &key, nil
 }
 
 func ConvertToKey(s string) string {

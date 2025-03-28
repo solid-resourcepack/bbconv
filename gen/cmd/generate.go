@@ -6,9 +6,7 @@ import (
 
 func init() {
 	rootCmd.AddCommand(generateCommand)
-	generateCommand.PersistentFlags().StringVarP(&BBFile, "source", "s", "./model.bbmodel", "BlockBench model file")
-	generateCommand.PersistentFlags().StringVarP(&OutDir, "output", "o", "", "Output directory")
-	generateCommand.PersistentFlags().StringVarP(&Namespace, "namespace", "n", "bbconv", "Minecraft ResourcePack namespace")
+	InitFlags(generateCommand)
 }
 
 var generateCommand = &cobra.Command{

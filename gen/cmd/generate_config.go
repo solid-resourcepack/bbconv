@@ -16,7 +16,7 @@ var generateConfigCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		InitBBCtx(cmd)
 		InitBaseCtx(cmd)
-		if err := baseformat.WriteModel(OutDir+"config.json", GetBaseCtx(cmd)); err != nil {
+		if err := baseformat.WriteModel(OutDir, GetBaseCtx(cmd)); err != nil {
 			log.Fatal(err)
 		}
 	},
