@@ -19,7 +19,34 @@ func WritePackData(data MCPackData, outDir string, namespace string) error {
 	if err != nil {
 		return err
 	}
+	err = WriteModelLinks(folder, data.Links)
+	if err != nil {
+		return err
+	}
 
+	return nil
+}
+
+func WriteModelLinks(basePath string, links []Link) error {
+	linksPath := filepath.Join(basePath, "items")
+	err := os.MkdirAll(linksPath, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	for _, link := range links {
+		name := strings.Split(link.Model.Model, "/")
+		out := fmt.Sprintf("%s/%s.json", linksPath, name[len(name)-1])
+		// Marshal model data to JSON
+		data, err := json.MarshalIndent(link, "", "  ")
+		if err != nil {
+			return fmt.Errorf("failed to marshal model data: %w", err)
+		}
+
+		// Write to file
+		if err := os.WriteFile(out, data, 0644); err != nil {
+			return fmt.Errorf("failed to write model file %s: %w", out, err)
+		}
+	}
 	return nil
 }
 

@@ -38,6 +38,7 @@ func BBToBase(bbModel *bbformat.Model, namespace string) *Model {
 		bones,
 		animations,
 		textures,
+		bbModel.Resolution,
 	}
 }
 

@@ -32,6 +32,6 @@ var (
 
 type Face struct {
 	UV       []float32 `json:"uv"`
-	Rotation float32   `json:"rotation,omitempty"`
-	Texture  int       `json:"texture,omitempty"`
+	Rotation *float32  `json:"rotation,omitempty"`
+	Texture  *int      `json:"texture,omitempty"`
 }

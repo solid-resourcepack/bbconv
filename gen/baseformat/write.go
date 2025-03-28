@@ -24,8 +24,11 @@ func WriteModel(dir string, model *Model) error {
 			return err
 		}
 	}
-
-	log.Printf("Writing model to file: %s\n", file)
+	path, err := filepath.Abs(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Writing model to file: %s\n", path)
 	err = os.WriteFile(file, write, 0644)
 	if err != nil {
 		return err

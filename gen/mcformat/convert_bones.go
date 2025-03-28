@@ -14,7 +14,7 @@ func ConvertBone(bone *baseformat.Bone, model baseformat.Model, namespace string
 		modelTextureMap[id] = fmt.Sprintf("%s:item/%s_%v", namespace, model.Name, id)
 	}
 
-	elements, err := ConvertElements(bone.Visuals)
+	elements, err := ConvertElements(bone.Visuals, model)
 	if err != nil {
 		return nil, nil, err
 	}
