@@ -18,7 +18,7 @@ func BaseToMc(model *baseformat.Model, namespace string) (MCPackData, error) {
 		for key, value := range parsedModels {
 			models[key] = value
 		}
-		links = append(parsedLinks, parsedLinks...)
+		links = append(links, parsedLinks...)
 	}
 	return MCPackData{
 		ModelName: model.Name,
