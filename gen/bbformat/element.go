@@ -11,6 +11,7 @@ type Element struct {
 	From                []float32       `json:"from"`
 	To                  []float32       `json:"to"`
 	Autouv              int             `json:"autouv"`
+	Inflate             *float32        `json:"inflate,omitempty"`
 	Color               int             `json:"color"`
 	Origin              []float32       `json:"origin"`
 	Rotation            []float32       `json:"rotation"`

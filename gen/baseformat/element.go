@@ -9,5 +9,12 @@ type Element struct {
 	From     vec3.T
 	To       vec3.T
 	Faces    map[bbformat.Facing]bbformat.Face
-	Rotation *vec3.T
+	Rotation *Rotation
+}
+
+type Rotation struct {
+	Origin  vec3.T  `json:"origin"`
+	Axis    string  `json:"axis"`
+	Angle   float64 `json:"angle"`
+	Rescale bool    `json:"rescale"`
 }

@@ -12,9 +12,10 @@ type Element struct {
 }
 
 type Rotation struct {
-	Origin []float64 `json:"origin"`
-	Axis   string    `json:"axis"`
-	Angle  float64   `json:"angle"`
+	Origin  []float64 `json:"origin"`
+	Axis    string    `json:"axis"`
+	Angle   float64   `json:"angle"`
+	Rescale bool      `json:"rescale"`
 }
 
 type Face struct {

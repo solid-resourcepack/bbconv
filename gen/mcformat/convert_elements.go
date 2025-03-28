@@ -14,21 +14,10 @@ func ConvertElements(elements []baseformat.Element, model baseformat.Model) ([]E
 		var rotation *Rotation
 		if element.Rotation != nil {
 			rotation = &Rotation{
-				Origin: []float64{8, 8, 8},
-				Axis:   "",
-				Angle:  0,
-			}
-			if element.Rotation[0] != 0 {
-				rotation.Axis = "x"
-				rotation.Angle = element.Rotation[0]
-			}
-			if element.Rotation[1] != 0 {
-				rotation.Axis = "y"
-				rotation.Angle = element.Rotation[1]
-			}
-			if element.Rotation[2] != 0 {
-				rotation.Axis = "z"
-				rotation.Angle = element.Rotation[2]
+				Origin:  element.Rotation.Origin.Slice(),
+				Axis:    element.Rotation.Axis,
+				Angle:   element.Rotation.Angle,
+				Rescale: element.Rotation.Rescale,
 			}
 		}
 		result = append(result, Element{
