@@ -1,3 +1,9 @@
 .idea
+.DS_Store
 **.exe
 **.bbmodel
+**.json
+plugin.iml
+/bbconv
+/assets
+**/.gradle
