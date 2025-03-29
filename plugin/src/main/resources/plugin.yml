@@ -1,0 +1,8 @@
+version: 0.1.0
+name: bbconv
+main: io.solidresourcepack.bbconv.plugin.Plugin
+authors:
+  - freggyy
+  - ugede
+commands:
+  t:
