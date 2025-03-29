@@ -2,10 +2,11 @@ package baseformat
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/solid-resourcepack/bbconv/bbformat"
 	"github.com/solid-resourcepack/bbconv/util"
 	"github.com/ungerik/go3d/float64/vec3"
-	"math"
 )
 
 var minPoint = vec3.T{-16, -16, -16}
@@ -91,7 +92,27 @@ func ResizeVisuals(bone *Bone) {
 	}
 	minVec, maxVec := CalculateBounds(points)
 	scale := CalculateScale(minVec, maxVec)
-	Resize(bone, minVec, maxVec, scale)
+	distanceToOrigin := DistanceVector(&origin, &minVec, &maxVec)
+
+	distanceToOrigin.Scale(scale)
+
+	Resize(bone, minVec, maxVec, scale, distanceToOrigin)
+}
+
+func DistanceVector(point, min, max *vec3.T) vec3.T {
+	var dist vec3.T
+
+	for i := 0; i < 3; i++ {
+		if point[i] < min[i] {
+			dist[i] = min[i] - point[i]
+		} else if point[i] > max[i] {
+			dist[i] = max[i] - point[i]
+		} else {
+			dist[i] = 0
+		}
+	}
+
+	return dist
 }
 
 func CalculateBounds(points []vec3.T) (vec3.T, vec3.T) {
@@ -120,7 +141,7 @@ func CalculateScale(minVec, maxVec vec3.T) float64 {
 	return scale
 }
 
-func Resize(bone *Bone, minSize vec3.T, maxSize vec3.T, scaleFactor float64) {
+func Resize(bone *Bone, minSize vec3.T, maxSize vec3.T, scaleFactor float64, distanceToOrigin vec3.T) {
 	elements := bone.Visuals
 
 	// Compute the center of the entire bounding box
@@ -128,7 +149,11 @@ func Resize(bone *Bone, minSize vec3.T, maxSize vec3.T, scaleFactor float64) {
 	center := add.Scale(0.5)
 	for i, b := range elements {
 		elements[i].From = scalePoint(&b.From, center, scaleFactor)
+		elements[i].From.Add(&distanceToOrigin)
+
 		elements[i].To = scalePoint(&b.To, center, scaleFactor)
+		elements[i].To.Add(&distanceToOrigin)
+
 		if elements[i].Rotation != nil {
 			elements[i].Rotation.Origin = scalePoint(&elements[i].Rotation.Origin, center, scaleFactor)
 		}
