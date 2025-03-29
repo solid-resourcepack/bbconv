@@ -4,3 +4,5 @@ main: io.solidresourcepack.bbconv.plugin.Plugin
 authors:
   - freggyy
   - ugede
+commands:
+  t:

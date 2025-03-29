@@ -72,7 +72,7 @@ data class RotationKeyframe(
 
 @ConfigSerializable
 data class ScaleKeyframe(
-    val time: Float,
+    val time: Float = 0f,
 
     val scale: Vector = Vector(0f, 0f, 0f),
 
