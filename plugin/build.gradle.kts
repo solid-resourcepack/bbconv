@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.1.10"
+    id("com.gradleup.shadow") version "8.3.3"
 }
 
 group = "io.solid-resourcepack.bbconv"
@@ -16,6 +17,7 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     implementation("org.spongepowered:configurate-extra-kotlin:4.1.2")
+    implementation("org.spongepowered:configurate-gson:4.1.2")
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
 }
 
