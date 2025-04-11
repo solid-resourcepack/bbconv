@@ -71,3 +71,11 @@ func ToQuaternion(v *vec3.T) quaternion.T {
 		cx*cy*cz + sx*sy*sz,
 	}
 }
+
+func toDisplay(v vec3.T) vec3.T {
+	return vec3.T{
+		-v[0],
+		v[1],
+		-v[2],
+	}
+}

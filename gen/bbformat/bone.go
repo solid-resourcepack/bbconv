@@ -8,6 +8,7 @@ import (
 type Bone struct {
 	Name       string      `json:"name"`
 	Origin     []float32   `json:"origin"`
+	Rotation   []float32   `json:"rotation"`
 	Color      int         `json:"color"`
 	UUID       string      `json:"uuid"`
 	MirrorUv   bool        `json:"mirror_uv"`

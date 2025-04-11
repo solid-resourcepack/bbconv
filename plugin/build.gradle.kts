@@ -1,6 +1,9 @@
+import dev.s7a.gradle.minecraft.server.tasks.LaunchMinecraftServerTask
+
 plugins {
     kotlin("jvm") version "2.1.10"
     id("com.gradleup.shadow") version "8.3.3"
+    id("dev.s7a.gradle.minecraft.server") version "3.2.1"
 }
 
 group = "io.solid-resourcepack.bbconv"
@@ -23,6 +26,19 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+task<LaunchMinecraftServerTask>("launchMinecraftServer") {
+    dependsOn("shadowJar")
+
+    doFirst {
+        copy {
+            from(layout.buildDirectory.file("libs/${project.name}-${project.version}-all.jar"))
+            into(layout.buildDirectory.file("MinecraftServer/plugins"))
+        }
+    }
+    jarUrl.set(LaunchMinecraftServerTask.JarUrl.Paper("1.21.4"))
+    agreeEula.set(true)
 }
 
 kotlin {

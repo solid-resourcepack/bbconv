@@ -5,14 +5,16 @@ import (
 )
 
 type Bone struct {
-	UUID     string    `json:"-"`
-	Id       string    `json:"id"`
-	Key      string    `json:"model,omitempty"`
-	Children []Bone    `json:"children,omitempty"`
-	Visuals  []Element `json:"-"`
-	Origin   vec3.T    `json:"origin"`
-	Visible  bool      `json:"visible"`
-	Scale    float64   `json:"scale"`
+	UUID          string     `json:"-"`
+	Id            string     `json:"id"`
+	Key           string     `json:"model,omitempty"`
+	Children      []Bone     `json:"children,omitempty"`
+	Visuals       []Element  `json:"-"`
+	Origin        vec3.T     `json:"origin"`
+	LeftRotation  Quaternion `json:"left_rotation,omitempty"`
+	RightRotation Quaternion `json:"right_rotation,omitempty"`
+	Visible       bool       `json:"visible"`
+	Scale         float64    `json:"scale"`
 }
 
 func (b Bone) FindBone(uuid string) *Bone {

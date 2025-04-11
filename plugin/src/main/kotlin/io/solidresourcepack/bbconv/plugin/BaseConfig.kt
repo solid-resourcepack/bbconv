@@ -1,5 +1,6 @@
 package io.solidresourcepack.bbconv.plugin
 
+import org.joml.Quaternionf
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.objectmapping.meta.Setting
 
@@ -12,6 +13,11 @@ data class Bone(
     val children: List<Bone> = emptyList(),
 
     val origin: List<Float> = emptyList(),
+
+    @Setting("left_rotation")
+    val leftRotation: Quaternion = Quaternion(0f, 0f, 0f, 0f),
+    @Setting("right_rotation")
+    val rightRotation: Quaternion = Quaternion(0f, 0f, 0f, 0f),
 
     val visible: Boolean = false,
 
@@ -106,7 +112,11 @@ data class Quaternion(
     val y: Float = 0f,
 
     val z: Float = 0f,
-)
+) {
+    fun toQuaternionf(): Quaternionf {
+        return Quaternionf(x, y, z, w)
+    }
+}
 
 @ConfigSerializable
 data class BaseConfig(
