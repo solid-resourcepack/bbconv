@@ -14,6 +14,7 @@ func SingularBoneTree(bone *bbformat.Bone, elements []bbformat.Element, baseId s
 		UUID:     bone.UUID,
 		Visible:  bone.Visibility,
 		Children: []Bone{},
+		Scale:    getScale(*bone, elements),
 	}
 
 	for _, child := range bone.Children {
@@ -31,7 +32,6 @@ func SingularBoneTree(bone *bbformat.Bone, elements []bbformat.Element, baseId s
 			}
 		}
 	}
-	ResizeVisuals(parentBone)
 	return parentBone, nil
 }
 
@@ -80,6 +80,30 @@ func appendElement(id string, parentBone *Bone, bbParentBone *bbformat.Bone, ele
 	if !ok {
 		return errors.New("child element not found")
 	}
-	parentBone.Visuals = append(parentBone.Visuals, ConvertElement(*bbParentBone, *element))
+	result := ConvertElement(*parentBone, *element, parentBone.Scale)
+	if result == nil {
+		log.Println("Will not display element", element.UUID, "on bone", parentBone.Id)
+		return nil
+	}
+	parentBone.Visuals = append(parentBone.Visuals, *result)
 	return nil
+}
+
+func getScale(bone bbformat.Bone, elements []bbformat.Element) float64 {
+	result := 1.0
+	for _, child := range bone.Children {
+		if child.Ref != nil {
+			element, ok := findElement(*child.Ref, elements)
+			if !ok {
+				continue
+			}
+			from := toVec(element.From)
+			to := toVec(element.To)
+			size := to.Sub(from).Length()
+			if size > result {
+				result = size
+			}
+		}
+	}
+	return result / 16.0
 }

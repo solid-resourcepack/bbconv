@@ -4,9 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/solid-resourcepack/bbconv/bbformat"
-	"github.com/ungerik/go3d/float64/quaternion"
 	"github.com/ungerik/go3d/float64/vec3"
-	"math"
 	"strconv"
 	"strings"
 )
@@ -64,28 +62,6 @@ func findBone(tree []Bone, uuid string) *Bone {
 	return nil
 }
 
-// Degrees to Radians
-func degToRad(deg float64) float64 {
-	return deg * (math.Pi / 180.0)
-}
-
-func ConvertRotation(v *vec3.T) quaternion.T {
-	x, y, z := degToRad(v[0]), degToRad(v[1]), degToRad(v[2])
-
-	// Compute half angles
-	cx, sx := math.Cos(x/2), math.Sin(x/2)
-	cy, sy := math.Cos(y/2), math.Sin(y/2)
-	cz, sz := math.Cos(z/2), math.Sin(z/2)
-
-	// Construct quaternion (XYZW order)
-	return quaternion.T{
-		sx*cy*cz - cx*sy*sz,
-		cx*sy*cz + sx*cy*sz,
-		cx*cy*sz - sx*sy*cz,
-		cx*cy*cz + sx*sy*sz,
-	}
-}
-
 func ConvertDataPoint(keyframe bbformat.Keyframe) (*vec3.T, error) {
 	if len(keyframe.DataPoints) < 1 {
 		return nil, errors.New("no dataPoints found")
@@ -138,7 +114,7 @@ func ConvertKeyframes(keyframes []bbformat.Keyframe) ([]PositionKeyframe, []Rota
 		}
 		switch keyframe.Channel {
 		case bbformat.KeyFrameTypeRotation:
-			rotation := ConvertRotation(data)
+			rotation := ToQuaternion(data)
 			rotationKeyframes = append(rotationKeyframes, RotationKeyframe{
 				Time:          keyframe.Time,
 				LeftRotation:  Quaternion(rotation),
