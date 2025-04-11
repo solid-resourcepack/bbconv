@@ -11,13 +11,22 @@ type Element struct {
 	From                []float32       `json:"from"`
 	To                  []float32       `json:"to"`
 	Autouv              int             `json:"autouv"`
-	Inflate             *float32        `json:"inflate,omitempty"`
+	Inflate             float32         `json:"inflate,omitempty"`
 	Color               int             `json:"color"`
 	Origin              []float32       `json:"origin"`
 	Rotation            []float32       `json:"rotation"`
 	Faces               map[Facing]Face `json:"faces"`
 	Type                string          `json:"type"`
 	UUID                string          `json:"uuid"`
+}
+
+func (e *Element) HasTextures() bool {
+	for _, face := range e.Faces {
+		if face.Texture != nil {
+			return true
+		}
+	}
+	return false
 }
 
 type Facing string
