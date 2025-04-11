@@ -64,6 +64,12 @@ func (v Vector) MarshalJSON() ([]byte, error) {
 type Quaternion quaternion.T
 
 func (q Quaternion) MarshalJSON() ([]byte, error) {
+	var w float64
+	if q[0] == 0 && q[1] == 0 && q[2] == 0 && q[3] == 0 {
+		w = 1
+	} else {
+		w = q[3]
+	}
 	str := fmt.Sprintf(`
 		{
 			"x": "%f",
@@ -71,6 +77,6 @@ func (q Quaternion) MarshalJSON() ([]byte, error) {
             "z": "%f",
 			"w": "%f"
 		}
-	`, q[0], q[1], q[2], q[3])
+	`, q[0], q[1], q[2], w)
 	return []byte(str), nil
 }

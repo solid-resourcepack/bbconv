@@ -16,13 +16,20 @@ func SingularBoneTree(bone *bbformat.Bone, elements []bbformat.Element, baseId s
 		Children: []Bone{},
 		Scale:    getScale(*bone, elements),
 	}
+	if bone.Rotation != nil {
+		raw := toVec(bone.Rotation)
+		display := toDisplay(*raw)
+		quatRotation := ToQuaternion(&display)
+		parentBone.LeftRotation = Quaternion(quatRotation)
+		parentBone.RightRotation = Quaternion(quatRotation.Inverted())
+	}
 
 	for _, child := range bone.Children {
 		if (child.Ref != nil) == (child.Bone != nil) {
 			return nil, errors.New("child is both ref and bone or nothing of both")
 		}
 		if child.Ref != nil {
-			if err := appendElement(*child.Ref, parentBone, bone, elements); err != nil {
+			if err := appendElement(*child.Ref, parentBone, elements); err != nil {
 				return nil, err
 			}
 		}
@@ -32,6 +39,11 @@ func SingularBoneTree(bone *bbformat.Bone, elements []bbformat.Element, baseId s
 			}
 		}
 	}
+	if len(parentBone.Visuals) == 0 {
+		parentBone.Visible = false
+	}
+	boneOrigin := toVec(bone.Origin).Scaled(1 / 16.0)
+	parentBone.Origin = toDisplay(boneOrigin)
 	return parentBone, nil
 }
 
@@ -50,9 +62,6 @@ func ConvertBones(outliners []bbformat.Bone, elements []bbformat.Element, baseId
 	}
 	result := make([]Bone, 0, len(outliners))
 	for _, bone := range outliners {
-		if !bone.Visibility {
-			continue
-		}
 		tree, err := SingularBoneTree(&bone, elements, baseId)
 		if err != nil {
 			log.Fatal(err)
@@ -72,10 +81,7 @@ func findElement(elementId string, elements []bbformat.Element) (*bbformat.Eleme
 	return nil, false
 }
 
-func appendElement(id string, parentBone *Bone, bbParentBone *bbformat.Bone, elements []bbformat.Element) error {
-	if !parentBone.Visible {
-		return nil
-	}
+func appendElement(id string, parentBone *Bone, elements []bbformat.Element) error {
 	element, ok := findElement(id, elements)
 	if !ok {
 		return errors.New("child element not found")
