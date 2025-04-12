@@ -114,7 +114,8 @@ func ConvertKeyframes(keyframes []bbformat.Keyframe) ([]PositionKeyframe, []Rota
 		}
 		switch keyframe.Channel {
 		case bbformat.KeyFrameTypeRotation:
-			rotation := ToQuaternion(data)
+			display := toDisplay(*data)
+			rotation := ToQuaternion(&display)
 			rotationKeyframes = append(rotationKeyframes, RotationKeyframe{
 				Time:          keyframe.Time,
 				LeftRotation:  Quaternion(rotation),
@@ -125,7 +126,7 @@ func ConvertKeyframes(keyframes []bbformat.Keyframe) ([]PositionKeyframe, []Rota
 			positionKeyframes = append(positionKeyframes, PositionKeyframe{
 				Time:          keyframe.Time,
 				Interpolation: keyframe.Interpolation,
-				Position:      Vector(*data),
+				Position:      Vector(toDisplay(*data)),
 			})
 		case bbformat.KeyFrameTypeScale:
 			scaleKeyframes = append(scaleKeyframes, ScaleKeyframe{
