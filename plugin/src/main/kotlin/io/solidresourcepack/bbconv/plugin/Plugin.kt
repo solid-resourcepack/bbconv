@@ -15,13 +15,21 @@ class Plugin : JavaPlugin() {
         this.getCommand("t")?.setExecutor(this)
     }
 
+    private lateinit var entity: RenderedEntity
+
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         val path = File(this.dataFolder, "baseconfig.json").toPath()
         val config = OpenModelLoader(path).load() ?: return false
 
-        val entity = RenderedEntity((sender as Player).location, config)
-        entity.spawn()
-
+        if (!::entity.isInitialized) {
+            entity = RenderedEntity((sender as Player).location, config)
+            entity.spawn()
+            if (args.isNotEmpty()) {
+                entity.getAnimationController().play(args[0])
+            }
+            return true
+        }
+        entity.getAnimationController().animate(0.10f)
         return true
     }
 

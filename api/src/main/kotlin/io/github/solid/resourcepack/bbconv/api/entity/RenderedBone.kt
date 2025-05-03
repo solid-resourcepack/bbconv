@@ -12,10 +12,19 @@ import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.util.*
 
-class RenderedBone(private val entity: RenderedEntity, private val bone: Bone) {
+class RenderedBone(
+    private val entity: RenderedEntity,
+    val bone: Bone,
+    val children: MutableList<RenderedBone> = mutableListOf()
+) {
 
     private lateinit var display: ItemDisplay
-
+    val initialTransformation = Transformation(
+        Vector3f(bone.origin[0], bone.origin[1], bone.origin[2]),
+        bone.leftRotation.toQuaternionf(),
+        Vector3f(bone.scale),
+        Quaternionf(),
+    )
 
     fun spawn() {
         if (::display.isInitialized) {
@@ -29,12 +38,7 @@ class RenderedBone(private val entity: RenderedEntity, private val bone: Bone) {
             it.itemModel = NamespacedKey.fromString(bone.model.replaceFirst("item/", ""))
         }
         display.setItemStack(stack)
-        display.transformation = Transformation(
-            Vector3f(bone.origin[0], bone.origin[1], bone.origin[2]),
-            bone.leftRotation.toQuaternionf(),
-            Vector3f(bone.scale),
-            Quaternionf(),
-        )
+        display.transformation = initialTransformation
         markDisplay()
         return
     }

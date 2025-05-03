@@ -23,7 +23,7 @@ task<LaunchMinecraftServerTask>("launchMinecraftServer") {
             into(layout.buildDirectory.file("MinecraftServer/plugins"))
         }
     }
-    jarUrl.set(LaunchMinecraftServerTask.JarUrl.Paper("1.21.4"))
+    jarUrl.set(LaunchMinecraftServerTask.JarUrl.Paper("1.21.5"))
     agreeEula.set(true)
 }
 
