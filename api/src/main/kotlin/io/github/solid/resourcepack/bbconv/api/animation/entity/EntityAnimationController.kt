@@ -25,6 +25,10 @@ class EntityAnimationController(
         activeAnimations[type] = 0f
     }
 
+    fun get(animation: String): EntityAnimationData? {
+        return loadedAnimations.toList().firstOrNull { it.first.name == animation }?.first
+    }
+
     fun cancel(animation: EntityAnimation) {
         val type = loadedAnimations.toList().firstOrNull { it.second == animation }?.first ?: return
         activeAnimations.remove(type)
@@ -65,8 +69,11 @@ class EntityAnimationController(
             activeAnimations[type] = time
         }
         result.forEach { (bone, transformation) ->
-            val transformation = appendTransformation(bone.initialTransformation, transformation)
-            println("changes in bone ${bone.bone.id}: $transformation")
+            val initial = bone.getInitialTransformation()
+            if(initial.leftRotation != Quaternionf()) {
+                println("bone ${bone.bone.id}: ${initial.leftRotation}")
+            }
+            val transformation = appendTransformation(transformation, initial)
             bone.getDisplay().transformation = transformation
         }
     }
@@ -111,7 +118,7 @@ class EntityAnimationController(
         val result = mutableMapOf<RenderedBone, Transformation>()
         parent.children.forEach { child ->
 
-            val initial = child.initialTransformation
+            val initial = child.getInitialTransformation()
             val parentTrans = transformation
 
             val localTranslation = Vector3f(initial.translation)
@@ -138,9 +145,9 @@ class EntityAnimationController(
 
     private fun appendTransformation(first: Transformation, second: Transformation): Transformation {
         return Transformation(
-            first.translation.add(second.translation),
-            Quaternionf(second.leftRotation).mul(first.leftRotation),
-            first.scale.add(second.scale),
+            Vector3f(first.translation).add(Vector3f(second.translation)),
+            Quaternionf(second.leftRotation).mul(Quaternionf(first.leftRotation)),
+            Vector3f(first.scale).add(Vector3f(second.scale)),
             Quaternionf()
         )
     }

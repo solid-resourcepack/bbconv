@@ -19,12 +19,19 @@ class RenderedBone(
 ) {
 
     private lateinit var display: ItemDisplay
-    val initialTransformation = Transformation(
+    private val initialTransformation = Transformation(
         Vector3f(bone.origin[0], bone.origin[1], bone.origin[2]),
         bone.leftRotation.toQuaternionf(),
         Vector3f(bone.scale),
         Quaternionf(),
     )
+
+    fun getInitialTransformation(): Transformation {
+        return Transformation(
+            Vector3f(initialTransformation.translation), Quaternionf(initialTransformation.leftRotation),
+            Vector3f(initialTransformation.scale), Quaternionf()
+        )
+    }
 
     fun spawn() {
         if (::display.isInitialized) {
@@ -38,7 +45,8 @@ class RenderedBone(
             it.itemModel = NamespacedKey.fromString(bone.model.replaceFirst("item/", ""))
         }
         display.setItemStack(stack)
-        display.transformation = initialTransformation
+        display.transformation = getInitialTransformation()
+        display.interpolationDuration = 1
         markDisplay()
         return
     }

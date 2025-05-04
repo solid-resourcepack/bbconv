@@ -43,7 +43,7 @@ class Timeline<T>(private val frames: TimelineFrames<T>, private val clazz: Clas
         fun ofPosition(frames: List<PositionKeyframe>): Timeline<Vector3f> {
             val converted = frames.associate {
                 it.time to Keyframe(
-                    it.position.toVectorf(),
+                    it.position.toVectorf().div(16f),
                     Interpolation.fromString(it.interpolation)
                 )
             }
@@ -54,7 +54,7 @@ class Timeline<T>(private val frames: TimelineFrames<T>, private val clazz: Clas
         fun ofScale(frames: List<ScaleKeyframe>): Timeline<Vector3f> {
             val converted = frames.associate {
                 it.time to Keyframe(
-                    it.scale.toVectorf(),
+                    it.scale.toVectorf().div(16f),
                     Interpolation.fromString(it.interpolation)
                 )
             }
