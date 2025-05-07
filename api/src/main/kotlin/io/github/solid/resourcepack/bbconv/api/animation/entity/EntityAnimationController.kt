@@ -60,8 +60,7 @@ class EntityAnimationController(
                 result.putAll(
                     partialAnimate(
                         anim, createContext(bone, time), result[bone] ?: Transformation(
-                            Vector3f(), Quaternionf(), Vector3f(),
-                            Quaternionf()
+                            Vector3f(), Quaternionf(), Vector3f(), Quaternionf()
                         )
                     )
                 )
@@ -69,11 +68,7 @@ class EntityAnimationController(
             activeAnimations[type] = time
         }
         result.forEach { (bone, transformation) ->
-            val initial = bone.getInitialTransformation()
-            if(initial.leftRotation != Quaternionf()) {
-                println("bone ${bone.bone.id}: ${initial.leftRotation}")
-            }
-            val transformation = appendTransformation(transformation, initial)
+            val transformation = appendTransformation(transformation, bone.getInitialTransformation())
             bone.getDisplay().transformation = transformation
         }
     }
@@ -87,12 +82,10 @@ class EntityAnimationController(
     }
 
     private fun bonesToAnimations(
-        bones: List<RenderedBone>,
-        animation: EntityAnimation
+        bones: List<RenderedBone>, animation: EntityAnimation
     ): MutableMap<RenderedBone, BoneAnimation> {
         val result = bones.filter { animation.keys.contains(it.bone.id) }
-            .associateWith { bone -> animation.toList().first { it.first == bone.bone.id }.second }
-            .toMutableMap()
+            .associateWith { bone -> animation.toList().first { it.first == bone.bone.id }.second }.toMutableMap()
         bones.forEach { bone ->
             result.putAll(bonesToAnimations(bone.children, animation))
         }
@@ -100,9 +93,7 @@ class EntityAnimationController(
     }
 
     private fun partialAnimate(
-        animation: BoneAnimation,
-        ctx: BoneAnimationContext,
-        transformation: Transformation
+        animation: BoneAnimation, ctx: BoneAnimationContext, transformation: Transformation
     ): Map<RenderedBone, Transformation> {
         val result = appendTransformation(transformation, animation.animate(ctx))
         val returned = mutableMapOf<RenderedBone, Transformation>()
@@ -112,30 +103,24 @@ class EntityAnimationController(
     }
 
     private fun animateChildren(
-        transformation: Transformation,
-        parent: RenderedBone
+        transformation: Transformation, parent: RenderedBone
     ): Map<RenderedBone, Transformation> {
         val result = mutableMapOf<RenderedBone, Transformation>()
         parent.children.forEach { child ->
 
             val initial = child.getInitialTransformation()
             val parentTrans = transformation
-
-            val localTranslation = Vector3f(initial.translation)
-                .mul(parentTrans.scale)
-                .rotate(parentTrans.leftRotation)
-
-            val worldTranslation = Vector3f(parentTrans.translation).add(localTranslation)
-
-            val worldRotation = Quaternionf(parentTrans.leftRotation).mul(initial.leftRotation)
-
-            val worldScale = Vector3f(parentTrans.scale).mul(initial.scale)
+            val worldTranslation = Vector3f(parentTrans.translation).add(
+                Vector3f(initial.translation).mul(parentTrans.scale).rotate(parentTrans.leftRotation)
+            )
+            val worldRotation =
+                delta(initial.leftRotation, Quaternionf(parentTrans.leftRotation).mul(initial.leftRotation))
+            val worldScale = Vector3f(parentTrans.scale).div(parent.bone.scale).mul(initial.scale)
 
             val childTransformation = Transformation(
                 worldTranslation,
                 worldRotation,
-                worldScale,
-                Quaternionf()
+                worldScale, Quaternionf()
             )
             result[child] = childTransformation
             result.putAll(animateChildren(childTransformation, child))
@@ -143,10 +128,15 @@ class EntityAnimationController(
         return result
     }
 
+    private fun delta(from: Quaternionf, to: Quaternionf): Quaternionf {
+        val invFrom = Quaternionf(from).invert()
+        return Quaternionf(to).mul(invFrom)
+    }
+
     private fun appendTransformation(first: Transformation, second: Transformation): Transformation {
         return Transformation(
             Vector3f(first.translation).add(Vector3f(second.translation)),
-            Quaternionf(second.leftRotation).mul(Quaternionf(first.leftRotation)),
+            Quaternionf(first.leftRotation).mul(Quaternionf(second.leftRotation)),
             Vector3f(first.scale).add(Vector3f(second.scale)),
             Quaternionf()
         )

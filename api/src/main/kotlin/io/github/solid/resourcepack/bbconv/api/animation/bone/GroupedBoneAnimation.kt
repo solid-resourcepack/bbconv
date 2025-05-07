@@ -3,6 +3,7 @@ package io.github.solid.resourcepack.bbconv.api.animation.bone
 import org.bukkit.util.Transformation
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import org.joml.times
 
 class GroupedBoneAnimation(
     private val animations: List<BoneAnimation>
@@ -13,7 +14,7 @@ class GroupedBoneAnimation(
             val transformation = it.animate(context)
             result = Transformation(
                 result.translation.add(transformation.translation),
-                result.leftRotation.add(transformation.leftRotation),
+                Quaternionf(transformation.leftRotation).times(result.leftRotation),
                 result.scale.add(transformation.scale),
                 Quaternionf()
             )

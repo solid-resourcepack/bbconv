@@ -19,6 +19,6 @@ class KeyFramedBoneAnimation(
             .interpolate(context.elapsedTime) else Vector3f()
         val rotation = if (animator.rotation.size >= 2) Timeline.ofRotation(animator.rotation)
             .interpolate(context.elapsedTime) else Quaternionf()
-        return Transformation(position, rotation, Vector3f(), Quaternionf())
+        return Transformation(position, rotation, scale, Quaternionf())
     }
 }
