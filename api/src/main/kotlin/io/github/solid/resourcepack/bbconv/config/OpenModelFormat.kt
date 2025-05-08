@@ -1,6 +1,7 @@
-package io.solidresourcepack.bbconv.plugin
+package io.github.solid.resourcepack.bbconv.config
 
 import org.joml.Quaternionf
+import org.joml.Vector3f
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.objectmapping.meta.Setting
 
@@ -14,10 +15,8 @@ data class Bone(
 
     val origin: List<Float> = emptyList(),
 
-    @Setting("left_rotation")
-    val leftRotation: Quaternion = Quaternion(0f, 0f, 0f, 0f),
-    @Setting("right_rotation")
-    val rightRotation: Quaternion = Quaternion(0f, 0f, 0f, 0f),
+    @Setting("left_rotation") val leftRotation: Quaternion = Quaternion(0f, 0f, 0f, 0f),
+    @Setting("right_rotation") val rightRotation: Quaternion = Quaternion(0f, 0f, 0f, 0f),
 
     val visible: Boolean = false,
 
@@ -30,11 +29,9 @@ data class Animation(
 
     val length: Double = 0.0,
 
-    @Setting("start_delay")
-    val startDelay: Float = 0f,
+    @Setting("start_delay") val startDelay: Float = 0f,
 
-    @Setting("loop_delay")
-    val loopDelay: Float = 0f,
+    @Setting("loop_delay") val loopDelay: Float = 0f,
 
     val name: String = "",
 
@@ -52,7 +49,9 @@ data class Animator(
     val rotation: List<RotationKeyframe> = emptyList(),
 
     val scale: List<ScaleKeyframe> = emptyList(),
-)
+) {
+
+}
 
 @ConfigSerializable
 data class PositionKeyframe(
@@ -67,11 +66,9 @@ data class PositionKeyframe(
 data class RotationKeyframe(
     val time: Float = 0f,
 
-    @Setting("left_rotation")
-    val leftRotation: Quaternion = Quaternion(0f, 0f, 0f, 0f),
+    @Setting("left_rotation") val leftRotation: Quaternion = Quaternion(0f, 0f, 0f, 0f),
 
-    @Setting("right_rotation")
-    val rightRotation: Quaternion = Quaternion(0f, 0f, 0f, 0f),
+    @Setting("right_rotation") val rightRotation: Quaternion = Quaternion(0f, 0f, 0f, 0f),
 
     val interpolation: String = "",
 )
@@ -86,22 +83,17 @@ data class ScaleKeyframe(
 )
 
 @ConfigSerializable
-data class Point(
-    val x: Float = 0f,
-
-    val y: Float = 0f,
-
-    val z: Float = 0f,
-)
-
-@ConfigSerializable
 data class Vector(
     val x: Float = 0f,
 
     val y: Float = 0f,
 
     val z: Float = 0f,
-)
+) {
+    fun toVectorf(): Vector3f {
+        return Vector3f(x, y, z)
+    }
+}
 
 @ConfigSerializable
 data class Quaternion(
@@ -119,11 +111,34 @@ data class Quaternion(
 }
 
 @ConfigSerializable
-data class BaseConfig(
+data class OpenModelConfig(
     val name: String = "",
 
-    @Setting("bone_tree")
-    val boneTree: List<Bone> = emptyList(),
+    @Setting("bone_tree") val boneTree: List<Bone> = emptyList(),
 
     val animations: List<Animation> = emptyList()
-)
+) {
+
+    private lateinit var boneMap: Map<String, Bone>
+
+    fun getBoneMap(): Map<String, Bone> {
+        if (::boneMap.isInitialized) {
+            return boneMap
+        }
+        val result = mutableMapOf<String, Bone>()
+        for (bone in boneTree) {
+            result.putAll(getPartBoneMap(bone))
+        }
+        boneMap = result
+        return result
+    }
+
+    private fun getPartBoneMap(bone: Bone): Map<String, Bone> {
+        val result = mutableMapOf<String, Bone>()
+        result[bone.id] = bone
+        for (child in bone.children) {
+            result.putAll(getPartBoneMap(child))
+        }
+        return result
+    }
+}
