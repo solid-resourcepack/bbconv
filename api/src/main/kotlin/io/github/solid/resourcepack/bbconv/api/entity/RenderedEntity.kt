@@ -47,7 +47,7 @@ data class RenderedEntity(
     private fun initBone(bone: Bone, parent: RenderedBone? = null): RenderedBone? {
         var rendered: RenderedBone? = null
         if (bone.visible) {
-            rendered = RenderedBone(this, bone)
+            rendered = RenderedBone(this, bone, parent = parent)
             parent?.children?.add(rendered)
             renderedBones[bone.id] = rendered
         }

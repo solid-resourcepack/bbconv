@@ -1,6 +1,7 @@
 package io.github.solid.resourcepack.bbconv.api.entity
 
 import io.github.solid.resourcepack.bbconv.config.Bone
+import io.github.solid.resourcepack.bbconv.config.DevFlags
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.EntityType
@@ -15,13 +16,14 @@ import java.util.*
 class RenderedBone(
     private val entity: RenderedEntity,
     val bone: Bone,
-    val children: MutableList<RenderedBone> = mutableListOf()
+    val children: MutableList<RenderedBone> = mutableListOf(),
+    private val parent: RenderedBone?,
 ) {
 
     private lateinit var display: ItemDisplay
     private val initialTransformation = Transformation(
         Vector3f(bone.origin[0], bone.origin[1], bone.origin[2]),
-        bone.leftRotation.toQuaternionf(),
+        if (parent != null) Quaternionf(parent.bone.leftRotation.toQuaternionf()).mul(bone.leftRotation.toQuaternionf()) else bone.leftRotation.toQuaternionf(),
         Vector3f(bone.scale),
         Quaternionf(),
     )
@@ -40,11 +42,17 @@ class RenderedBone(
         display = entity.location.world.spawnEntity(entity.location, EntityType.ITEM_DISPLAY) as ItemDisplay
         display.isInvisible = !bone.visible
         display.itemDisplayTransform = ItemDisplay.ItemDisplayTransform.FIXED
-        val stack = ItemStack(Material.BONE)
-        stack.editMeta {
-            it.itemModel = NamespacedKey.fromString(bone.model.replaceFirst("item/", ""))
+        if(DevFlags.ANIMATION_DEBUG) {
+            val stack = ItemStack(Material.CYAN_CONCRETE)
+            display.setItemStack(stack)
+        }else {
+            val stack = ItemStack(Material.BONE)
+            stack.editMeta {
+                it.itemModel = NamespacedKey.fromString(bone.model.replaceFirst("item/", ""))
+            }
+            display.setItemStack(stack)
         }
-        display.setItemStack(stack)
+
         display.transformation = getInitialTransformation()
         display.interpolationDuration = 1
         markDisplay()
@@ -85,7 +93,7 @@ class RenderedBone(
                         PersistentDataType.STRING
                     )
                     if (entityId == entity.id.toString() && boneId == bone.id) {
-                        val rendered = RenderedBone(entity, bone)
+                        val rendered = RenderedBone(entity, bone, parent = null)
                         rendered.display = display
                         return Optional.of(rendered)
                     }

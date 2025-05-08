@@ -5,6 +5,7 @@ import io.github.solid.resourcepack.bbconv.api.animation.bone.BoneAnimationConte
 import io.github.solid.resourcepack.bbconv.api.entity.RenderedBone
 import io.github.solid.resourcepack.bbconv.api.entity.RenderedEntity
 import io.github.solid.resourcepack.bbconv.config.OpenModelConfig
+import io.github.solid.resourcepack.bbconv.util.QuaternionMath
 import org.bukkit.util.Transformation
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -107,35 +108,38 @@ class EntityAnimationController(
     ): Map<RenderedBone, Transformation> {
         val result = mutableMapOf<RenderedBone, Transformation>()
         parent.children.forEach { child ->
-
             val initial = child.getInitialTransformation()
             val parentTrans = transformation
-            val worldTranslation = Vector3f(parentTrans.translation).add(
-                Vector3f(initial.translation).mul(parentTrans.scale).rotate(parentTrans.leftRotation)
-            )
-            val worldRotation =
-                delta(initial.leftRotation, Quaternionf(parentTrans.leftRotation).mul(initial.leftRotation))
-            val worldScale = Vector3f(parentTrans.scale).div(parent.bone.scale).mul(initial.scale)
+
+            // Calculate rotated local translation
+            val rotatedTranslation = Vector3f(initial.translation)
+            parentTrans.leftRotation.transform(rotatedTranslation)
+
+            val deltaTranslation = Vector3f(rotatedTranslation).sub(initial.translation)
+
+            // Rotation delta: how the rotation has changed
+            val rotatedRotation = Quaternionf(parentTrans.leftRotation).mul(initial.leftRotation)
+            val deltaRotation = QuaternionMath.delta(initial.leftRotation, rotatedRotation)
+
+            // Scale delta: how the scale has changed
+            val deltaScale = Vector3f(parentTrans.scale).div(parent.bone.scale).mul(initial.scale)
 
             val childTransformation = Transformation(
-                worldTranslation,
-                worldRotation,
-                worldScale, Quaternionf()
+                deltaTranslation,
+                deltaRotation,
+                deltaScale,
+                Quaternionf()
             )
+
             result[child] = childTransformation
             result.putAll(animateChildren(childTransformation, child))
         }
         return result
     }
 
-    private fun delta(from: Quaternionf, to: Quaternionf): Quaternionf {
-        val invFrom = Quaternionf(from).invert()
-        return Quaternionf(to).mul(invFrom)
-    }
-
     private fun appendTransformation(first: Transformation, second: Transformation): Transformation {
         return Transformation(
-            Vector3f(first.translation).add(Vector3f(second.translation)),
+            Vector3f(first.translation).add(second.translation),
             Quaternionf(first.leftRotation).mul(Quaternionf(second.leftRotation)),
             Vector3f(first.scale).add(Vector3f(second.scale)),
             Quaternionf()
