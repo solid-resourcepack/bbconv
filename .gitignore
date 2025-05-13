@@ -2,7 +2,8 @@
 .DS_Store
 **.exe
 **.bbmodel
-**.json
+gen/**.json
+gen/assets
 plugin.iml
 /bbconv
 /assets
